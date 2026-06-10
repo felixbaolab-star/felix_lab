@@ -28,7 +28,8 @@ with source_data as (
   fact_line.quantity,
   fact_line.unit_price,
   fact_line.quantity * fact_line.unit_price AS gross_amount,
-  fact_header.customer_key
+  fact_header.customer_key,
+  COALESCE(fact_header.picked_by_person_key, -1) AS picked_by_person_key
   from cast_type fact_line
   left join {{ref('stg_fact_sales_order')}} fact_header
   on fact_line.sales_order_key = fact_header.sales_order_key

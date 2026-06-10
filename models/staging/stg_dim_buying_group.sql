@@ -15,8 +15,22 @@ from `vit-lam-data.wide_world_importers.sales__buying_groups`
   CAST(buying_group_name AS STRING) AS buying_group_name
   from rename_columns
 )
+, union_undefined_record AS (
+  SELECT 
+    buying_group_key,
+    buying_group_name
+  FROM cast_type
+  UNION ALL
+  SELECT 
+  0 AS buying_group_key,
+  'Undefined' AS buying_group_name
+  UNION ALL
+  SELECT
+  -1 AS buying_group_key,
+  'Invalid' AS buying_group_name
+)
 select 
 buying_group_key,
 buying_group_name
 from 
-cast_type
+union_undefined_record

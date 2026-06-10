@@ -31,15 +31,38 @@ with source_data as (
       END AS is_on_credit_hold
   FROM cast_type
 )
+, union_undefined_record AS (
+  SELECT 
+    customer_key,
+    customer_name,
+    customer_category_key,
+    buying_group_key,
+    is_on_credit_hold
+  FROM convert_boolean
+  UNION ALL
+  SELECT 
+  0 AS customer_key,
+  'Undefined' AS customer_name,
+  0 AS customer_category_key,
+  0 AS buying_group_key,
+  'Undefined' AS is_on_credit_hold
+  UNION ALL
+  SELECT
+  -1 AS customer_key,
+  'Invalid' AS customer_name,
+  -1 AS customer_category_key,
+  -1 AS buying_group_key,
+  'Invalid' AS is_on_credit_hold
+)
 select 
 customer.customer_key,
 customer.customer_name,
 customer.customer_category_key,
-COALESCE(customer_category.customer_category_name, 'Undefined') AS customer_category_name,
+COALESCE(customer_category.customer_category_name, 'Invalid') AS customer_category_name,
 customer.buying_group_key,
-COALESCE(buying_group.buying_group_name, 'Undefined') AS buying_group_name,
+COALESCE(buying_group.buying_group_name, 'Invalid') AS buying_group_name,
 customer.is_on_credit_hold
-from convert_boolean as customer
+from union_undefined_record as customer
 left join {{ref('stg_dim_customer_categories')}} customer_category
 on customer.customer_category_key = customer_category.customer_category_key
 left join {{ref('stg_dim_buying_group')}} buying_group
