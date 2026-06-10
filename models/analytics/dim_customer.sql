@@ -35,9 +35,9 @@ select
 customer.customer_key,
 customer.customer_name,
 customer.customer_category_key,
-customer_category.customer_category_name,
+COALESCE(customer_category.customer_category_name, 'Undefined') AS customer_category_name,
 customer.buying_group_key,
-buying_group.buying_group_name,
+COALESCE(buying_group.buying_group_name, 'Undefined') AS buying_group_name,
 customer.is_on_credit_hold
 from convert_boolean as customer
 left join {{ref('stg_dim_customer_categories')}} customer_category

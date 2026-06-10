@@ -32,12 +32,12 @@ with source_data AS (
       END AS is_chiller_stock
   FROM cast_type
 )
-SELECT  
+SELECT
 product.product_key,
 product.product_name,
-product.brand_name,
+COALESCE(product.brand_name, 'Undefined') AS brand_name,
 product.supplier_key,
-supplier.supplier_name,
+COALESCE(supplier.supplier_name, 'Undefined') AS supplier_name,
 product.is_chiller_stock
 FROM 
 convert_boolean product
