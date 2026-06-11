@@ -14,7 +14,21 @@ with source_data as (
   CAST(supplier_name AS STRING) AS supplier_name
   FROM rename_columns
 )
+, union_undefined_record AS (
+  SELECT 
+    supplier_key,
+    supplier_name
+  FROM cast_type
+  UNION ALL
+  SELECT 
+  0 AS supplier_key,
+  'Undefined' AS supplier_name
+  UNION ALL
+  SELECT
+  -1 AS supplier_key,
+  'Invalid' AS supplier_name
+)
 SELECT 
 supplier_key,
 supplier_name
-FROM cast_type
+FROM union_undefined_record

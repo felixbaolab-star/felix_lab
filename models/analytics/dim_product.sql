@@ -32,14 +32,37 @@ with source_data AS (
       END AS is_chiller_stock
   FROM cast_type
 )
+, union_undefined_record AS (
+  SELECT 
+    product_key,
+    product_name,
+    brand_name,
+    supplier_key,
+    is_chiller_stock
+  FROM convert_boolean
+  UNION ALL
+  SELECT 
+  0 AS product_key,
+  'Undefined' AS product_name,
+  'Undefined' AS brand_name,
+  0 AS supplier_key,
+  'Undefined' AS is_chiller_stock
+  UNION ALL
+  SELECT
+  -1 AS product_key,
+  'Invalid' AS product_name,
+  'Invalid' AS brand_name,
+  -1 AS supplier_key,
+  'Invalid' AS is_chiller_stock
+)
 SELECT
 product.product_key,
 product.product_name,
 COALESCE(product.brand_name, 'Undefined') AS brand_name,
 product.supplier_key,
-COALESCE(supplier.supplier_name, 'Undefined') AS supplier_name,
+COALESCE(supplier.supplier_name, 'Invalid') AS supplier_name,
 product.is_chiller_stock
 FROM 
-convert_boolean product
+union_undefined_record product
 left join {{ref('dim_supplier')}} supplier
 on product.supplier_key = supplier.supplier_key
